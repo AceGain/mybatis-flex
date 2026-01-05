@@ -15,16 +15,7 @@
  */
 package com.mybatisflex.core.table;
 
-import com.mybatisflex.annotation.Column;
-import com.mybatisflex.annotation.ColumnAlias;
-import com.mybatisflex.annotation.ColumnMask;
-import com.mybatisflex.annotation.Id;
-import com.mybatisflex.annotation.InsertListener;
-import com.mybatisflex.annotation.NoneListener;
-import com.mybatisflex.annotation.SetListener;
-import com.mybatisflex.annotation.Table;
-import com.mybatisflex.annotation.TableRef;
-import com.mybatisflex.annotation.UpdateListener;
+import com.mybatisflex.annotation.*;
 import com.mybatisflex.core.BaseMapper;
 import com.mybatisflex.core.FlexGlobalConfig;
 import com.mybatisflex.core.exception.FlexExceptions;
@@ -385,6 +376,9 @@ public class TableInfoFactory {
             // 列名
             String columnName = getColumnName(tableInfo.isCamelToUnderline(), field, columnAnnotation);
 
+            // 默认逻辑字段
+            LogicType defaultLogic = columnAnnotation != null ? columnAnnotation.defaultLogic() : LogicType.EQUALS;
+
             // 逻辑删除字段
             if ((columnAnnotation != null && columnAnnotation.isLogicDelete())
                 || columnName.equals(config.getLogicDeleteColumn())) {
@@ -458,6 +452,7 @@ public class TableInfoFactory {
             }
 
             columnInfo.setColumn(columnName);
+            columnInfo.setDefaultLogic(defaultLogic);
             columnInfo.setProperty(field.getName());
             columnInfo.setPropertyType(fieldType);
             columnInfo.setIgnore(columnAnnotation != null && columnAnnotation.ignore());

@@ -16,6 +16,8 @@
 
 package com.mybatisflex.core.constant;
 
+import com.mybatisflex.annotation.LogicType;
+
 /**
  * SQL 构建常量池。
  *
@@ -110,16 +112,16 @@ public final class SqlConsts {
 
     // === 逻辑符号 ===
 
-    public static final String GT = " > ";
-    public static final String GE = " >= ";
-    public static final String LT = " < ";
-    public static final String LE = " <= ";
-    public static final String LIKE = " LIKE ";
-    public static final String NOT_LIKE = " NOT LIKE ";
-    public static final String EQUALS = " = ";
-    public static final String NOT_EQUALS = " != ";
-    public static final String IS_NULL = " IS NULL ";
-    public static final String IS_NOT_NULL = " IS NOT NULL ";
+    public static final String GT = LogicType.GT.getValue();
+    public static final String GE = LogicType.GE.getValue();
+    public static final String LT = LogicType.LT.getValue();
+    public static final String LE = LogicType.LE.getValue();
+    public static final String LIKE = LogicType.LIKE.getValue();
+    public static final String NOT_LIKE = LogicType.NOT_LIKE.getValue();
+    public static final String EQUALS = LogicType.EQUALS.getValue();
+    public static final String NOT_EQUALS = LogicType.NOT_EQUALS.getValue();
+    public static final String IS_NULL = LogicType.IS_NULL.getValue();
+    public static final String IS_NOT_NULL = LogicType.IS_NOT_NULL.getValue();
     public static final String IN = " IN ";
     public static final String NOT_IN = " NOT IN ";
     public static final String BETWEEN = " BETWEEN ";

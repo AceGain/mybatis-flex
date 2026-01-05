@@ -15,11 +15,7 @@
  */
 package com.mybatisflex.core.table;
 
-import com.mybatisflex.annotation.Column;
-import com.mybatisflex.annotation.InsertListener;
-import com.mybatisflex.annotation.KeyType;
-import com.mybatisflex.annotation.SetListener;
-import com.mybatisflex.annotation.UpdateListener;
+import com.mybatisflex.annotation.*;
 import com.mybatisflex.core.FlexConsts;
 import com.mybatisflex.core.FlexGlobalConfig;
 import com.mybatisflex.core.constant.SqlConsts;
@@ -620,12 +616,12 @@ public class TableInfo {
                 }
 
                 // 忽略租户字段时 不要过滤租户字段
-                if(isIgnoreTenantCondition){
+                if (isIgnoreTenantCondition) {
                     if (Objects.equals(column, versionColumn)) {
                         continue;
                     }
                     // 过滤乐观锁字段 和 租户字段
-                }else if (ObjectUtil.equalsAny(column, versionColumn, tenantIdColumn)) {
+                } else if (ObjectUtil.equalsAny(column, versionColumn, tenantIdColumn)) {
                     continue;
                 }
 
@@ -650,12 +646,12 @@ public class TableInfo {
                 }
 
                 // 忽略租户字段时 不要过滤租户字段
-                if(isIgnoreTenantCondition){
+                if (isIgnoreTenantCondition) {
                     if (Objects.equals(column, versionColumn)) {
                         continue;
                     }
                     // 过滤乐观锁字段 和 租户字段
-                }else if (ObjectUtil.equalsAny(column, versionColumn, tenantIdColumn)) {
+                } else if (ObjectUtil.equalsAny(column, versionColumn, tenantIdColumn)) {
                     continue;
                 }
 
@@ -693,12 +689,12 @@ public class TableInfo {
                     continue;
                 }
                 // 忽略租户字段时 不要过滤租户字段
-                if(isIgnoreTenantCondition){
+                if (isIgnoreTenantCondition) {
                     if (Objects.equals(column, versionColumn)) {
                         continue;
                     }
                     // 过滤乐观锁字段 和 租户字段
-                }else if (ObjectUtil.equalsAny(column, versionColumn, tenantIdColumn)) {
+                } else if (ObjectUtil.equalsAny(column, versionColumn, tenantIdColumn)) {
                     continue;
                 }
 
@@ -746,12 +742,12 @@ public class TableInfo {
                 }
 
                 // 忽略租户字段时 不要过滤租户字段
-                if(isIgnoreTenantCondition){
+                if (isIgnoreTenantCondition) {
                     if (Objects.equals(column, versionColumn)) {
                         continue;
                     }
                     // 过滤乐观锁字段 和 租户字段
-                }else if (ObjectUtil.equalsAny(column, versionColumn, tenantIdColumn)) {
+                } else if (ObjectUtil.equalsAny(column, versionColumn, tenantIdColumn)) {
                     continue;
                 }
 
@@ -1043,7 +1039,7 @@ public class TableInfo {
                     }
                     queryWrapper.and(QueryCondition.create(queryColumn, operator, buildSqlArg(column, value)));
                 } else {
-                    queryWrapper.and(queryColumn.eq(buildSqlArg(column, value)));
+                    queryWrapper.and(buildQueryCondition(queryColumn, value));
                 }
             }
         });
@@ -1064,6 +1060,32 @@ public class TableInfo {
             return new TypeHandlerObject(typeHandler, value, columnInfo.getJdbcType());
         }
         return value;
+    }
+
+    private QueryCondition buildQueryCondition(QueryColumn queryColumn, Object value) {
+        String column = queryColumn.getName();
+        ColumnInfo columnInfo = columnInfoMapping.get(column);
+        // 给定的列名在实体类中没有对应的字段
+        if (columnInfo == null) {
+            return QueryCondition.create(queryColumn, value);
+        }
+        // 如果给定的列名在实体类中有对应的字段
+        // 则使用实体类中属性标记的 @Column(typeHandler = ...) 类型处理器处理参数
+        // 调用 TypeHandler#setParameter 为 PreparedStatement 设置值
+        TypeHandler<?> typeHandler = columnInfo.buildTypeHandler(null);
+        if (typeHandler != null) {
+            value = new TypeHandlerObject(typeHandler, value, columnInfo.getJdbcType());
+        }
+        // 则使用实体类中属性标记的 @Column(defaultLogic = ...) 类型为判断逻辑
+        LogicType defaultLogic = columnInfo.getDefaultLogic();
+        if (defaultLogic == LogicType.LIKE || defaultLogic == LogicType.NOT_LIKE) {
+            value = "%" + value + "%";
+        } else if (defaultLogic == LogicType.LIKE_LEFT || defaultLogic == LogicType.NOT_LIKE_LEFT) {
+            value = value + "%";
+        } else if (defaultLogic == LogicType.LIKE_RIGHT || defaultLogic == LogicType.NOT_LIKE_RIGHT) {
+            value = "%" + value;
+        }
+        return QueryCondition.create(queryColumn, defaultLogic.getValue(), value);
     }
 
     public String getKeyProperties() {

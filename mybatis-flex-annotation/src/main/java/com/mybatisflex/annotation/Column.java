@@ -42,6 +42,11 @@ public @interface Column {
     boolean ignore() default false;
 
     /**
+     * 默认判断逻辑
+     */
+    LogicType defaultLogic() default LogicType.EQUALS;
+
+    /**
      * insert 的时候默认值，这个值会直接被拼接到 sql 而不通过参数设置。
      */
     String onInsertValue() default "";

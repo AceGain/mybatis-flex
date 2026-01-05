@@ -15,6 +15,7 @@
  */
 package com.mybatisflex.core.table;
 
+import com.mybatisflex.annotation.LogicType;
 import com.mybatisflex.core.FlexGlobalConfig;
 import com.mybatisflex.core.mask.CompositeMaskTypeHandler;
 import com.mybatisflex.core.mask.MaskTypeHandler;
@@ -42,6 +43,8 @@ public class ColumnInfo {
      * 数据库列名。
      */
     protected String column;
+
+    protected LogicType defaultLogic;
 
     /**
      * 列的别名。
@@ -95,6 +98,14 @@ public class ColumnInfo {
 
     public void setColumn(String column) {
         this.column = column;
+    }
+
+    public LogicType getDefaultLogic() {
+        return defaultLogic;
+    }
+
+    public void setDefaultLogic(LogicType defaultLogic) {
+        this.defaultLogic = defaultLogic;
     }
 
     public String[] getAlias() {
